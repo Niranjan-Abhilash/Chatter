@@ -51,7 +51,7 @@
       await fetch(`${API_URL}/send`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sender: username, message })
+        body: JSON.stringify({ username: username, message: message })
       });
 
       document.getElementById("message").value = "";
