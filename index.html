@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tesla Chat</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #111;
+      color: #eee;
+      padding: 20px;
+    }
+    #messages {
+      border: 1px solid #444;
+      padding: 10px;
+      height: 300px;
+      overflow-y: scroll;
+      background-color: #222;
+    }
+    input, button {
+      padding: 8px;
+      margin: 5px 0;
+      background: #333;
+      border: none;
+      color: white;
+    }
+    button {
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Tesla Chat</h1>
+  <div>
+    <input type="text" id="username" placeholder="Your name" />
+    <input type="text" id="message" placeholder="Type a message" />
+    <button onclick="sendMessage()">Send</button>
+    <button onclick="fetchMessages()">Refresh</button>
+  </div>
+
+  <div id="messages"></div>
+
+  <script>
+    const API_URL = "https://reaper028412.pythonanywhere.com/"; // Replace this
+
+    async function sendMessage() {
+      const username = document.getElementById("username").value;
+      const message = document.getElementById("message").value;
+
+      await fetch(`${API_URL}/send`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sender: username, message })
+      });
+
+      document.getElementById("message").value = "";
+      fetchMessages();
+    }
+
+    async function fetchMessages() {
+      const res = await fetch(`${API_URL}/messages`);
+      const data = await res.json();
+
+      const messagesDiv = document.getElementById("messages");
+      messagesDiv.innerHTML = "";
+
+      (data.Chat || []).forEach(msgObj => {
+        const [sender, message] = Object.entries(msgObj)[0];
+        const msgElem = document.createElement("div");
+        msgElem.textContent = `${sender}: ${message}`;
+        messagesDiv.appendChild(msgElem);
+      });
+    }
+
+    // Auto refresh every 5 seconds
+    setInterval(fetchMessages, 5000);
+    fetchMessages();
+  </script>
+
+</body>
+</html>
